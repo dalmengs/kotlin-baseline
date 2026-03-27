@@ -22,9 +22,9 @@ class TransactionController(
     @PostMapping
     fun payment(
         @RequestBody request: PaymentRequest,
-        @RequestHeader("Idempotency-Key") idempotencyKey: String
+        // @RequestHeader("blockingSecondsForTest") blockingSecondsForTest: Long? = 0L
     ): BaseResponse<TransactionResponse>
-            = BaseResponse.ok(data = transactionService.payment(request, idempotencyKey))
+            = BaseResponse.ok(data = transactionService.payment(request))
 
     @GetMapping
     fun getTransactions(

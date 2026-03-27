@@ -40,3 +40,4 @@ out/
 .kotlin
 
 script/venv/**
+script/result.json

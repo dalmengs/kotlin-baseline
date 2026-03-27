@@ -8,14 +8,6 @@ import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 
 interface TransactionRepository : JpaRepository<Transaction, Long> {
-
-    @Query("""
-        SELECT t
-        FROM Transaction t
-        WHERE t.idempotencyKey = :idempotencyKey
-    """)
-    fun findByIdempotencyKey(@Param("idempotencyKey") idempotencyKey: String): Transaction?
-
     @Query("""
         SELECT t
         FROM Transaction t

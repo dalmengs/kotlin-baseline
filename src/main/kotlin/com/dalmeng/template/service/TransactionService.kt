@@ -6,6 +6,7 @@ import com.dalmeng.template.entity.Transaction
 import com.dalmeng.template.entity.TransactionStatus
 import com.dalmeng.template.entity.TransactionType
 import com.dalmeng.template.exception.WalletNotFoundException
+import com.dalmeng.template.idempotency.Idempotent
 import com.dalmeng.template.other.BaseException
 import com.dalmeng.template.other.BasePagingResponse
 import com.dalmeng.template.repository.TransactionRepository
@@ -20,14 +21,12 @@ class TransactionService(
     private val walletRepository: WalletRepository,
     private val transactionRepository: TransactionRepository
 ) {
+
+    @Idempotent
     @Transactional
-    fun payment(paymentRequest: PaymentRequest, idempotencyKey: String): TransactionResponse {
-        // 멱등성 키 확인
-        transactionRepository.findByIdempotencyKey(idempotencyKey)?.let {
-            throw BaseException(
-                errorCode = 405,
-                errorMessage = "Transaction ${it.id} is already being processed",
-            )
+    fun payment(paymentRequest: PaymentRequest): TransactionResponse {
+        if (paymentRequest.amount.toInt() == 9) {
+            Thread.sleep(3 * 1000)
         }
 
         // 잔액 조회 - 락
@@ -55,7 +54,6 @@ class TransactionService(
             val transaction = Transaction.create(
                 amount = paymentRequest.amount,
                 type = paymentRequest.type,
-                idempotencyKey = idempotencyKey,
                 status = status,
                 user = wallet.user
             )
